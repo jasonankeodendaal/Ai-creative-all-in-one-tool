@@ -9,7 +9,7 @@ import InfoIcon from './components/icons/InfoIcon';
 import TrashIcon from './components/icons/TrashIcon';
 import ApiKeyError from './components/ApiKeyError';
 
-// The API key is baked in at build time. This constant checks if it exists.
+// Fix: Per Gemini API guidelines, check for process.env.API_KEY.
 const IS_API_KEY_SET = process.env.API_KEY && process.env.API_KEY.length > 0;
 
 const MAX_IMAGES = 8;
@@ -24,6 +24,12 @@ const ASPECT_RATIOS = [
     { id: '16:9', name: 'Landscape', description: 'For YouTube, TV' },
     { id: '1:1', name: 'Square', description: 'For Instagram Feed' },
     { id: '9:16', name: 'Portrait', description: 'For Stories, Reels' }
+];
+const VIDEO_DURATIONS = [
+    { id: '15 seconds', name: '15s' },
+    { id: '30 seconds', name: '30s' },
+    { id: '60 seconds', name: '60s' },
+    { id: '3 minutes', name: '3 Min' },
 ];
 
 const AspectRatioIcon: React.FC<{ ratio: string }> = ({ ratio }) => {
@@ -689,6 +695,7 @@ const App: React.FC = () => {
   const [styleTechniques, setStyleTechniques] = useState<string[]>([]);
   const [stylePalette, setStylePalette] = useState<string | null>(null);
   const [aspectRatio, setAspectRatio] = useState<string>(ASPECT_RATIOS[0].id);
+  const [videoDuration, setVideoDuration] = useState<string | null>(null);
 
   const [imageAdStyle, setImageAdStyle] = useState<ImageAdStyle>({
     layout: null, fontFamily: 'Helvetica, sans-serif', fontColor: '#FFFFFF',
@@ -779,7 +786,7 @@ const App: React.FC = () => {
   }
 
   const handleGenerateVideoClick = useCallback(async () => {
-    if (uploadedImages.length === 0) return;
+    if (uploadedImages.length === 0 || !videoDuration) return;
 
     setIsLoading(true);
     setError(null);
@@ -815,6 +822,7 @@ const App: React.FC = () => {
             { companyName, tel, email },
             imagesToProcess,
             logoWasAdded,
+            videoDuration,
             bibleGuidelines || undefined,
             aspectRatio
         );
@@ -824,7 +832,7 @@ const App: React.FC = () => {
     } finally {
         setIsLoading(false);
     }
-  }, [styleEra, styleAudience, styleMoods, styleTechniques, stylePalette, companyName, tel, email, uploadedImages, logo, bibleGuidelines, aspectRatio]);
+  }, [styleEra, styleAudience, styleMoods, styleTechniques, stylePalette, companyName, tel, email, uploadedImages, logo, bibleGuidelines, aspectRatio, videoDuration]);
 
   const handleGenerateImageClick = useCallback(async () => {
     if (!imageAdStyle.layout || uploadedImages.length === 0) return;
@@ -895,7 +903,7 @@ const App: React.FC = () => {
     setMode('video');
     setUploadedImages([]);
     setLogo(null); setCompanyBible(null); setBibleGuidelines(null);
-    setStyleEra(STYLE_ERAS[0]); setStyleAudience(STYLE_AUDIENCES[0]); setStyleMoods([]); setStyleTechniques([]); setStylePalette(null); setAspectRatio(ASPECT_RATIOS[0].id);
+    setStyleEra(STYLE_ERAS[0]); setStyleAudience(STYLE_AUDIENCES[0]); setStyleMoods([]); setStyleTechniques([]); setStylePalette(null); setAspectRatio(ASPECT_RATIOS[0].id); setVideoDuration(null);
     setImageAdStyle({ layout: null, fontFamily: 'Helvetica, sans-serif', fontColor: '#FFFFFF', fontWeight: 'normal', textTransform: 'none', letterSpacing: 0, textEffect: 'none', backgroundColor: '#000000', backgroundOpacity: 0.7, useGradient: false, backgroundGradientStart: '#000000', backgroundGradientEnd: '#4B0082', imageFilter: 'none', brightness: 100, contrast: 100, saturate: 100, duotoneColor1: '#0000FF', duotoneColor2: '#FFFF00', borderColor: '#FFFFFF', borderWidth: 0, frameEffect: 'none', padding: { top: 4, right: 4, bottom: 4, left: 4 } });
     setCompanyName(''); setTel(''); setEmail('');
     setIsLoading(false); setError(null);
@@ -905,10 +913,10 @@ const App: React.FC = () => {
   const isGenerateDisabled = useMemo(() => {
     if (isLoading) return true;
     if (uploadedImages.length === 0 || companyName.trim().length === 0) return true;
-    if (mode === 'video' && (styleMoods.length === 0 || !stylePalette)) return true;
+    if (mode === 'video' && (styleMoods.length === 0 || !stylePalette || !videoDuration)) return true;
     if (mode === 'image' && !imageAdStyle.layout) return true;
     return false;
-  }, [isLoading, uploadedImages.length, companyName, mode, styleMoods, stylePalette, imageAdStyle.layout]);
+  }, [isLoading, uploadedImages.length, companyName, mode, styleMoods, stylePalette, imageAdStyle.layout, videoDuration]);
 
   const toggleMultiSelectItem = (item: string, list: string[], setList: React.Dispatch<React.SetStateAction<string[]>>, max: number) => {
     setList(prev => prev.includes(item) ? prev.filter(i => i !== item) : (prev.length < max ? [...prev, item] : prev));
@@ -1125,6 +1133,17 @@ const App: React.FC = () => {
                                             <span className="font-semibold text-sm block leading-tight">{ratio.name}</span>
                                             <span className="text-xs text-gray-300/70 block leading-tight">{ratio.id}</span>
                                         </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="text-md font-semibold text-gray-400 mb-2">Video Duration (Required)</h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                {VIDEO_DURATIONS.map(d => (
+                                    <button key={d.id} onClick={() => setVideoDuration(d.id)} className={`p-3 text-center rounded-lg border-2 transition-all duration-200 ${videoDuration === d.id ? 'bg-pink-600 border-pink-400 shadow-lg' : 'bg-gray-700/50 border-gray-600 hover:border-pink-500'}`}>
+                                        <span className="font-semibold text-sm">{d.name}</span>
                                     </button>
                                 ))}
                             </div>

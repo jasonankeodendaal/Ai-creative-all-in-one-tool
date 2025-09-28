@@ -6,10 +6,13 @@ let ai: GoogleGenAI | null = null;
 // Lazily initialize the AI instance to avoid crashing the app on load
 // if the API key is not yet set.
 const getAi = (): GoogleGenAI => {
+    // Fix: Per Gemini API guidelines, the API key must be obtained from process.env.API_KEY.
     if (!process.env.API_KEY) {
+        // Fix: Update error message to reference API_KEY.
         throw new Error("API_KEY environment variable is not set. Please configure it in your Vercel deployment settings.");
     }
     if (!ai) {
+        // Fix: Initialize with API key from environment variable.
         ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     }
     return ai;
@@ -43,6 +46,7 @@ export const generateVideo = async (
     details: BusinessDetails, 
     images: UploadedImage[],
     logoWasAdded: boolean,
+    duration: string,
     bibleInstructions?: string,
     aspectRatio: string = '16:9'
 ): Promise<string> => {
@@ -75,6 +79,7 @@ export const generateVideo = async (
 
     finalPrompt += `\n**CRITICAL FORMATTING:** The video's aspect ratio MUST be ${aspectRatio}. You must adapt the entire composition, animations, and text placement to perfectly fit this format. Do not simply crop; re-imagine the scene for the specified dimension.`;
 
+    finalPrompt += `\n**VIDEO DURATION (CRITICAL):** The video's total runtime must be exactly ${duration}. Do not deviate from this length.`;
     
     if (details.companyName) {
         finalPrompt += ` This ad is for the company '${details.companyName}'.`;
@@ -126,6 +131,7 @@ export const generateVideo = async (
         }
 
         console.log("Fetching generated video...");
+        // Fix: Per Gemini API guidelines, API key must be from process.env.API_KEY.
         const response = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
         
         if (!response.ok) {
@@ -145,6 +151,7 @@ export const generateVideo = async (
 
         if (error instanceof Error) {
             // Check for the specific error from getAi()
+            // Fix: Check for the updated error message.
             if (error.message.startsWith("API_KEY environment variable is not set")) {
                 throw error;
             }
