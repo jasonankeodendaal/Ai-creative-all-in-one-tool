@@ -30,6 +30,12 @@
 </head>
   <body class="bg-gray-900 text-white">
     <div id="root"></div>
+    <script>
+      // Shim 'process' for the browser environment to prevent a "process is not defined" error.
+      // This allows the app to load and display a proper error message if the API key isn't
+      // injected by a build process.
+      window.process = { env: {} };
+    </script>
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>
