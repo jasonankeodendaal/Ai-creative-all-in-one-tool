@@ -117,10 +117,24 @@ export const generateVideo = async (
 
         console.log("Polling for video generation status...");
 
-        while (!operation.done) {
+        const startTime = Date.now();
+        // Set a 30-minute timeout, as video generation can be a lengthy process.
+        const timeout = 30 * 60 * 1000;
+
+        while (!operation?.done) {
+            if (Date.now() - startTime > timeout) {
+                throw new Error("Video generation timed out after 30 minutes. This can happen with very complex requests. Please try again with a simpler prompt.");
+            }
+            
             await new Promise(resolve => setTimeout(resolve, 10000));
-            operation = await aiInstance.operations.getVideosOperation({ operation: operation });
-            console.log("Polling status:", operation.done);
+
+            try {
+                operation = await aiInstance.operations.getVideosOperation({ operation: operation });
+                console.log("Polling status:", operation?.done);
+            } catch (pollError) {
+                console.error("Error during polling for video status:", pollError);
+                throw new Error("Failed to retrieve video generation status. The process may have been interrupted.");
+            }
         }
 
         console.log("Video generation complete.");

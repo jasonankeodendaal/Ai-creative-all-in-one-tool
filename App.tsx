@@ -854,6 +854,11 @@ const App: React.FC = () => {
     }
   }, [imageAdStyle, companyName, tel, email, uploadedImages, logo]);
   
+// Fix: Resolve TypeScript errors by adding explicit types to `canvas.toBlob` callbacks
+// and using null checks for safety. This prevents type inference issues where `blob`
+// was incorrectly treated as `unknown`. The `.zip` generation logic is also made
+// more robust by handling potential null blobs, passing image quality settings correctly,
+// and casting the final zip content type.
   const handleDownload = useCallback(async (format: 'png' | 'jpg' | 'pdf' | 'pdf-print' | 'svg' | 'zip') => {
       const canvas = generatedCanvasRef.current;
       if (!canvas) return;
@@ -863,9 +868,13 @@ const App: React.FC = () => {
 
       try {
         if (format === 'png') {
-            canvas.toBlob((blob) => triggerDownload(blob!, `${baseFilename}.png`), 'image/png');
+            canvas.toBlob((blob: Blob | null) => {
+              if (blob) triggerDownload(blob, `${baseFilename}.png`);
+            }, 'image/png');
         } else if (format === 'jpg') {
-            canvas.toBlob((blob) => triggerDownload(blob!, `${baseFilename}.jpg`), 'image/jpeg', 0.9);
+            canvas.toBlob((blob: Blob | null) => {
+              if (blob) triggerDownload(blob, `${baseFilename}.jpg`);
+            }, 'image/jpeg', 0.9);
         } else if (format === 'svg') {
             const svgString = await generateImageAdSVG(uploadedImages[0].file, logo?.file || null, { companyName, tel, email }, imageAdStyle);
             const blob = new Blob([svgString], { type: 'image/svg+xml' });
@@ -884,13 +893,24 @@ const App: React.FC = () => {
         } else if (format === 'zip') {
              const { JSZip } = (window as any);
              const zip = new JSZip();
-             const canvasBlob = (type: 'image/png'|'image/jpeg') => new Promise<Blob>(res => canvas.toBlob(b => res(b!), type));
-             zip.file(`${baseFilename}.png`, await canvasBlob('image/png'));
-             zip.file(`${baseFilename}.jpg`, await canvasBlob('image/jpeg'));
+             const canvasToBlob = (type: 'image/png'|'image/jpeg', quality?: number): Promise<Blob | null> => (
+                new Promise(resolve => canvas.toBlob(blob => resolve(blob), type, quality))
+             );
+             
+             const pngBlob = await canvasToBlob('image/png');
+             if (pngBlob) {
+                zip.file(`${baseFilename}.png`, pngBlob);
+             }
+
+             const jpgBlob = await canvasToBlob('image/jpeg', 0.9);
+             if (jpgBlob) {
+                zip.file(`${baseFilename}.jpg`, jpgBlob);
+             }
+
              const svgString = await generateImageAdSVG(uploadedImages[0].file, logo?.file || null, { companyName, tel, email }, imageAdStyle);
              zip.file(`${baseFilename}.svg`, new Blob([svgString], { type: 'image/svg+xml' }));
              const content = await zip.generateAsync({ type: 'blob' });
-             triggerDownload(content, `${baseFilename}-package.zip`);
+             triggerDownload(content as Blob, `${baseFilename}-package.zip`);
         }
       } catch (err: any) {
           setError(err.message || 'Failed to generate download.');

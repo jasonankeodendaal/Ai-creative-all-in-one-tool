@@ -6,9 +6,10 @@ const loadingMessages = [
   'Warming up the pixels...',
   'Choreographing the animation...',
   'Mixing a vibrant color palette...',
-  'Adding the "wow" factor...',
+  'This is a complex creation, adding extra detail...',
   'Rendering the pop-up effects...',
   'Syncing the visual rhythm...',
+  'Still working... great things take time!',
   'Almost there, preparing the final cut...',
   'Finalizing your masterpiece...',
 ];
@@ -23,7 +24,7 @@ const LoadingIndicator: React.FC = () => {
         const nextIndex = (currentIndex + 1) % loadingMessages.length;
         return loadingMessages[nextIndex];
       });
-    }, 2500);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
