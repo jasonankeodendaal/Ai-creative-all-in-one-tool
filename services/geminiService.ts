@@ -6,12 +6,15 @@ let ai: GoogleGenAI | null = null;
 // Lazily initialize the AI instance to avoid crashing the app on load
 // if the API key is not yet set.
 const getAi = (): GoogleGenAI => {
-    // Use `process.env.API_KEY` as mandated by the guidelines.
-    if (!process.env.API_KEY) {
+    // The API key must be available in `process.env.API_KEY`.
+    const apiKey = process.env.API_KEY;
+
+    if (!apiKey) {
+        // Fix: Update error message to reference API_KEY instead of VITE_API_KEY.
         throw new Error("API_KEY environment variable is not set. Please configure it in your deployment settings.");
     }
     if (!ai) {
-        ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        ai = new GoogleGenAI({ apiKey });
     }
     return ai;
 };
@@ -144,7 +147,7 @@ export const generateVideo = async (
         }
 
         console.log("Fetching generated video...");
-        // Use `process.env.API_KEY` to access the environment variable.
+        // Fix: Use process.env.API_KEY to align with the coding guidelines.
         const response = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
         
         if (!response.ok) {
@@ -163,7 +166,7 @@ export const generateVideo = async (
         let detailedMessage = "An unknown error occurred during video generation.";
 
         if (error instanceof Error) {
-            // Check for the specific error from getAi()
+            // Fix: Check for the updated error message from getAi().
             if (error.message.startsWith("API_KEY environment variable is not set")) {
                 throw error;
             }

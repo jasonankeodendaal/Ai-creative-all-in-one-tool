@@ -9,8 +9,8 @@ import InfoIcon from './components/icons/InfoIcon.tsx';
 import TrashIcon from './components/icons/TrashIcon.tsx';
 import ApiKeyError from './components/ApiKeyError.tsx';
 
-// Use `process.env.API_KEY` which is the prescribed way to access env vars
-// in this environment. This fixes the runtime error.
+// Fix: Use process.env.API_KEY to align with the coding guidelines and fix TypeScript errors.
+// Check if the Google Gemini API key is set in the environment variables.
 const IS_API_KEY_SET = process.env.API_KEY && process.env.API_KEY.length > 0;
 
 const MAX_IMAGES = 8;
