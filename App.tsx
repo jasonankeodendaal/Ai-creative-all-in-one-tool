@@ -1,13 +1,13 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { UploadedImage } from './types';
-import { generateVideo } from './services/geminiService';
-import SparklesIcon from './components/icons/SparklesIcon';
-import UploadIcon from './components/icons/UploadIcon';
-import ImagePreview from './components/ImagePreview';
-import LoadingIndicator from './components/LoadingIndicator';
-import InfoIcon from './components/icons/InfoIcon';
-import TrashIcon from './components/icons/TrashIcon';
-import ApiKeyError from './components/ApiKeyError';
+import { UploadedImage } from './types.ts';
+import { generateVideo } from './services/geminiService.ts';
+import SparklesIcon from './components/icons/SparklesIcon.tsx';
+import UploadIcon from './components/icons/UploadIcon.tsx';
+import ImagePreview from './components/ImagePreview.tsx';
+import LoadingIndicator from './components/LoadingIndicator.tsx';
+import InfoIcon from './components/icons/InfoIcon.tsx';
+import TrashIcon from './components/icons/TrashIcon.tsx';
+import ApiKeyError from './components/ApiKeyError.tsx';
 
 // Fix: Per Gemini API guidelines, check for process.env.API_KEY.
 const IS_API_KEY_SET = process.env.API_KEY && process.env.API_KEY.length > 0;

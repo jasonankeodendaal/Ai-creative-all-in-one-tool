@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { UploadedImage } from '../types';
-import TrashIcon from './icons/TrashIcon';
+import { UploadedImage } from '../types.ts';
+import TrashIcon from './icons/TrashIcon.tsx';
 
 interface ImagePreviewProps {
   image: UploadedImage;

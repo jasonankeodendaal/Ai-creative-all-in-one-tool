@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { UploadedImage } from '../types';
+import { UploadedImage } from '../types.ts';
 
 let ai: GoogleGenAI | null = null;
 

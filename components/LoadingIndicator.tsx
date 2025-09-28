@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import SparklesIcon from './icons/SparklesIcon';
+import SparklesIcon from './icons/SparklesIcon.tsx';
 
 const loadingMessages = [
   'Warming up the pixels...',
