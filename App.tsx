@@ -9,8 +9,8 @@ import InfoIcon from './components/icons/InfoIcon.tsx';
 import TrashIcon from './components/icons/TrashIcon.tsx';
 import ApiKeyError from './components/ApiKeyError.tsx';
 
-// Fix: Use Vite's standard `import.meta.env` for client-side environment variables.
-const IS_API_KEY_SET = import.meta.env.VITE_API_KEY && import.meta.env.VITE_API_KEY.length > 0;
+// Fix: Use `process.env.API_KEY` as required by the coding guidelines.
+const IS_API_KEY_SET = process.env.API_KEY && process.env.API_KEY.length > 0;
 
 const MAX_IMAGES = 8;
 
@@ -856,9 +856,7 @@ const App: React.FC = () => {
   
 // Fix: Resolve TypeScript errors by adding explicit types to `canvas.toBlob` callbacks
 // and using null checks for safety. This prevents type inference issues where `blob`
-// was incorrectly treated as `unknown`. The `.zip` generation logic is also made
-// more robust by handling potential null blobs, passing image quality settings correctly,
-// and casting the final zip content type.
+// was incorrectly treated as `unknown`.
   const handleDownload = useCallback(async (format: 'png' | 'jpg' | 'pdf' | 'pdf-print' | 'svg' | 'zip') => {
       const canvas = generatedCanvasRef.current;
       if (!canvas) return;
@@ -894,7 +892,7 @@ const App: React.FC = () => {
              const { JSZip } = (window as any);
              const zip = new JSZip();
              const canvasToBlob = (type: 'image/png'|'image/jpeg', quality?: number): Promise<Blob | null> => (
-                new Promise(resolve => canvas.toBlob(blob => resolve(blob), type, quality))
+                new Promise(resolve => canvas.toBlob((blob: Blob | null) => resolve(blob), type, quality))
              );
              
              const pngBlob = await canvasToBlob('image/png');

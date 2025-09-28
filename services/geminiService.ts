@@ -6,15 +6,14 @@ let ai: GoogleGenAI | null = null;
 // Lazily initialize the AI instance to avoid crashing the app on load
 // if the API key is not yet set.
 const getAi = (): GoogleGenAI => {
-    // Fix: Use Vite's standard `import.meta.env` for client-side environment variables.
-    // The variable MUST be prefixed with VITE_ to be exposed to the browser.
-    if (!import.meta.env.VITE_API_KEY) {
-        // Fix: Update error message to reference VITE_API_KEY.
-        throw new Error("VITE_API_KEY environment variable is not set. Please configure it in your Vercel deployment settings.");
+    // Fix: Use `process.env.API_KEY` as required by the coding guidelines.
+    if (!process.env.API_KEY) {
+        // Fix: Update error message to reference API_KEY.
+        throw new Error("API_KEY environment variable is not set. Please configure it in your deployment settings.");
     }
     if (!ai) {
         // Fix: Initialize with API key from environment variable.
-        ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
+        ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     }
     return ai;
 };
@@ -146,8 +145,8 @@ export const generateVideo = async (
         }
 
         console.log("Fetching generated video...");
-        // Fix: Use Vite's `import.meta.env` to access the environment variable.
-        const response = await fetch(`${downloadLink}&key=${import.meta.env.VITE_API_KEY}`);
+        // Fix: Use `process.env.API_KEY` to access the environment variable.
+        const response = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
         
         if (!response.ok) {
             throw new Error(`Failed to download video: ${response.statusText}`);
@@ -167,7 +166,7 @@ export const generateVideo = async (
         if (error instanceof Error) {
             // Check for the specific error from getAi()
             // Fix: Check for the updated error message.
-            if (error.message.startsWith("VITE_API_KEY environment variable is not set")) {
+            if (error.message.startsWith("API_KEY environment variable is not set")) {
                 throw error;
             }
 
