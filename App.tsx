@@ -9,7 +9,8 @@ import InfoIcon from './components/icons/InfoIcon.tsx';
 import TrashIcon from './components/icons/TrashIcon.tsx';
 import ApiKeyError from './components/ApiKeyError.tsx';
 
-// Fix: Use `process.env.API_KEY` as required by the coding guidelines.
+// Use `process.env.API_KEY` which is the prescribed way to access env vars
+// in this environment. This fixes the runtime error.
 const IS_API_KEY_SET = process.env.API_KEY && process.env.API_KEY.length > 0;
 
 const MAX_IMAGES = 8;
@@ -196,7 +197,7 @@ const compositeImageWithLogo = (baseImageFile: File, logoFile: File): Promise<Fi
 
                 ctx.drawImage(logoImage, x, y, logoWidth, logoHeight);
 
-                canvas.toBlob((blob) => {
+                canvas.toBlob((blob: Blob | null) => {
                     if (blob) {
                         const newFile = new File([blob], baseImageFile.name, { type: baseImageFile.type });
                         resolve(newFile);

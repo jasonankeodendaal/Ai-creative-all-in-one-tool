@@ -6,13 +6,11 @@ let ai: GoogleGenAI | null = null;
 // Lazily initialize the AI instance to avoid crashing the app on load
 // if the API key is not yet set.
 const getAi = (): GoogleGenAI => {
-    // Fix: Use `process.env.API_KEY` as required by the coding guidelines.
+    // Use `process.env.API_KEY` as mandated by the guidelines.
     if (!process.env.API_KEY) {
-        // Fix: Update error message to reference API_KEY.
         throw new Error("API_KEY environment variable is not set. Please configure it in your deployment settings.");
     }
     if (!ai) {
-        // Fix: Initialize with API key from environment variable.
         ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     }
     return ai;
@@ -129,7 +127,8 @@ export const generateVideo = async (
 
             try {
                 operation = await aiInstance.operations.getVideosOperation({ operation: operation });
-                console.log("Polling status:", operation?.done);
+                // Add more detailed logging to help debug potential "stuck" states.
+                console.log("Polling status:", operation?.done, "Response:", operation);
             } catch (pollError) {
                 console.error("Error during polling for video status:", pollError);
                 throw new Error("Failed to retrieve video generation status. The process may have been interrupted.");
@@ -145,7 +144,7 @@ export const generateVideo = async (
         }
 
         console.log("Fetching generated video...");
-        // Fix: Use `process.env.API_KEY` to access the environment variable.
+        // Use `process.env.API_KEY` to access the environment variable.
         const response = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
         
         if (!response.ok) {
@@ -165,7 +164,6 @@ export const generateVideo = async (
 
         if (error instanceof Error) {
             // Check for the specific error from getAi()
-            // Fix: Check for the updated error message.
             if (error.message.startsWith("API_KEY environment variable is not set")) {
                 throw error;
             }
