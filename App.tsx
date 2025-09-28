@@ -1124,7 +1124,8 @@ const App: React.FC = () => {
                             <h3 className="text-md font-semibold text-gray-400 mb-2">Visual Style & Techniques (Choose up to 3)</h3>
                             <div className="flex flex-wrap gap-2">
                                 {STYLE_TECHNIQUES.map(tech => (
-                                    <button key={tech} onClick={() => toggleMultiSelectItem(tech, styleTechniques, 3)} className={`px-3 py-1 text-sm rounded-full border-2 transition-all duration-200 ${styleTechniques.includes(tech) ? 'bg-pink-600 border-pink-400' : 'bg-gray-700/50 border-gray-600 hover:border-pink-500'}`}>
+                                    // Fix: Added the missing `setStyleTechniques` argument to the function call.
+                                    <button key={tech} onClick={() => toggleMultiSelectItem(tech, styleTechniques, setStyleTechniques, 3)} className={`px-3 py-1 text-sm rounded-full border-2 transition-all duration-200 ${styleTechniques.includes(tech) ? 'bg-pink-600 border-pink-400' : 'bg-gray-700/50 border-gray-600 hover:border-pink-500'}`}>
                                         {tech}
                                     </button>
                                 ))}
