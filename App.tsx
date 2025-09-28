@@ -7,6 +7,10 @@ import ImagePreview from './components/ImagePreview';
 import LoadingIndicator from './components/LoadingIndicator';
 import InfoIcon from './components/icons/InfoIcon';
 import TrashIcon from './components/icons/TrashIcon';
+import ApiKeyError from './components/ApiKeyError';
+
+// The API key is baked in at build time. This constant checks if it exists.
+const IS_API_KEY_SET = process.env.API_KEY && process.env.API_KEY.length > 0;
 
 const MAX_IMAGES = 8;
 
@@ -670,6 +674,11 @@ const Accordion: React.FC<{ title: string; children: React.ReactNode; defaultOpe
 
 
 const App: React.FC = () => {
+  // If the API key isn't set, render an error screen immediately.
+  if (!IS_API_KEY_SET) {
+    return <ApiKeyError />;
+  }
+
   const [mode, setMode] = useState<'video' | 'image'>('video');
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [logo, setLogo] = useState<UploadedImage | null>(null);

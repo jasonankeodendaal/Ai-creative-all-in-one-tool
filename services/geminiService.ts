@@ -1,11 +1,20 @@
 import { GoogleGenAI } from "@google/genai";
 import { UploadedImage } from '../types';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable is not set");
-}
+let ai: GoogleGenAI | null = null;
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Lazily initialize the AI instance to avoid crashing the app on load
+// if the API key is not yet set.
+const getAi = (): GoogleGenAI => {
+    if (!process.env.API_KEY) {
+        throw new Error("API_KEY environment variable is not set. Please configure it in your Vercel deployment settings.");
+    }
+    if (!ai) {
+        ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    }
+    return ai;
+};
+
 
 const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -37,6 +46,8 @@ export const generateVideo = async (
     bibleInstructions?: string,
     aspectRatio: string = '16:9'
 ): Promise<string> => {
+    const aiInstance = getAi(); // Get or initialize the AI instance
+
     if (images.length === 0) {
         throw new Error("At least one image is required to generate a video.");
     }
@@ -86,7 +97,7 @@ export const generateVideo = async (
         
         console.log("Starting video generation with prompt:", finalPrompt);
 
-        let operation = await ai.models.generateVideos({
+        let operation = await aiInstance.models.generateVideos({
             model: 'veo-2.0-generate-001',
             prompt: finalPrompt,
             image: {
@@ -102,7 +113,7 @@ export const generateVideo = async (
 
         while (!operation.done) {
             await new Promise(resolve => setTimeout(resolve, 10000));
-            operation = await ai.operations.getVideosOperation({ operation: operation });
+            operation = await aiInstance.operations.getVideosOperation({ operation: operation });
             console.log("Polling status:", operation.done);
         }
 
@@ -133,6 +144,11 @@ export const generateVideo = async (
         let detailedMessage = "An unknown error occurred during video generation.";
 
         if (error instanceof Error) {
+            // Check for the specific error from getAi()
+            if (error.message.startsWith("API_KEY environment variable is not set")) {
+                throw error;
+            }
+
             try {
                 const parsedError = JSON.parse(error.message);
                 if (parsedError.error && parsedError.error.message) {
