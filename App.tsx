@@ -9,8 +9,8 @@ import InfoIcon from './components/icons/InfoIcon.tsx';
 import TrashIcon from './components/icons/TrashIcon.tsx';
 import ApiKeyError from './components/ApiKeyError.tsx';
 
-// Fix: Per Gemini API guidelines, check for process.env.API_KEY.
-const IS_API_KEY_SET = process.env.API_KEY && process.env.API_KEY.length > 0;
+// Fix: Use Vite's standard `import.meta.env` for client-side environment variables.
+const IS_API_KEY_SET = import.meta.env.VITE_API_KEY && import.meta.env.VITE_API_KEY.length > 0;
 
 const MAX_IMAGES = 8;
 

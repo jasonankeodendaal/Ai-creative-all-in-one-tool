@@ -17,12 +17,12 @@
     <meta name="apple-mobile-web-app-title" content="AI Ad Gen" />
 
     <script src="https://cdn.tailwindcss.com"></script>
-  <script type="importmap">
+<script type="importmap">
 {
   "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.1.1/",
     "react": "https://aistudiocdn.com/react@^19.1.1",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
     "@google/genai": "https://aistudiocdn.com/@google/genai@^1.21.0"
   }
 }
@@ -30,12 +30,6 @@
 </head>
   <body class="bg-gray-900 text-white">
     <div id="root"></div>
-    <script>
-      // Shim 'process' for the browser environment to prevent a "process is not defined" error.
-      // This allows the app to load and display a proper error message if the API key isn't
-      // injected by a build process.
-      window.process = { env: {} };
-    </script>
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>
