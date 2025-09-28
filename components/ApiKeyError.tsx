@@ -14,9 +14,11 @@ const ApiKeyError: React.FC = () => (
       <div className="mt-6 text-left bg-gray-900 p-4 rounded-md border border-gray-700">
         <p className="text-md font-semibold text-gray-200">Action Required:</p>
         <p className="mt-2 text-gray-400">
+          {/* Fix: Update error message to refer to API_KEY. */}
           The <code className="bg-gray-700 text-yellow-400 px-1 py-0.5 rounded-sm text-sm font-mono">API_KEY</code> environment variable has not been set for this deployment.
         </p>
         <p className="mt-3 text-gray-400">
+          {/* Fix: Update error message to refer to API_KEY. */}
           Please go to your <strong>deployment project settings</strong>, navigate to the <strong>Environment Variables</strong> section, and add a variable named <code className="bg-gray-700 text-yellow-400 px-1 py-0.5 rounded-sm text-sm font-mono">API_KEY</code> with your valid Google Gemini API key.
         </p>
       </div>

@@ -6,11 +6,12 @@ let ai: GoogleGenAI | null = null;
 // Lazily initialize the AI instance to avoid crashing the app on load
 // if the API key is not yet set.
 const getAi = (): GoogleGenAI => {
-    // The API key must be available in `process.env.API_KEY`.
+    // The API key must be available via Vite's env variables.
+    // Fix: Use process.env.API_KEY as per @google/genai guidelines.
     const apiKey = process.env.API_KEY;
 
     if (!apiKey) {
-        // Fix: Update error message to reference API_KEY instead of VITE_API_KEY.
+        // Fix: Update error message to reflect the change to API_KEY.
         throw new Error("API_KEY environment variable is not set. Please configure it in your deployment settings.");
     }
     if (!ai) {
@@ -147,7 +148,7 @@ export const generateVideo = async (
         }
 
         console.log("Fetching generated video...");
-        // Fix: Use process.env.API_KEY to align with the coding guidelines.
+        // Fix: Use process.env.API_KEY as per @google/genai guidelines.
         const response = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
         
         if (!response.ok) {

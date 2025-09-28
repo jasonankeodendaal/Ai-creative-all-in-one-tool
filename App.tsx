@@ -9,8 +9,8 @@ import InfoIcon from './components/icons/InfoIcon.tsx';
 import TrashIcon from './components/icons/TrashIcon.tsx';
 import ApiKeyError from './components/ApiKeyError.tsx';
 
-// Fix: Use process.env.API_KEY to align with the coding guidelines and fix TypeScript errors.
-// Check if the Google Gemini API key is set in the environment variables.
+// Fix: Use process.env.API_KEY as per @google/genai guidelines.
+// This resolves the TypeScript error as we no longer depend on vite/client types.
 const IS_API_KEY_SET = process.env.API_KEY && process.env.API_KEY.length > 0;
 
 const MAX_IMAGES = 8;
@@ -1124,7 +1124,7 @@ const App: React.FC = () => {
                             <h3 className="text-md font-semibold text-gray-400 mb-2">Visual Style & Techniques (Choose up to 3)</h3>
                             <div className="flex flex-wrap gap-2">
                                 {STYLE_TECHNIQUES.map(tech => (
-                                    <button key={tech} onClick={() => toggleMultiSelectItem(tech, styleTechniques, setStyleTechniques, 3)} className={`px-3 py-1 text-sm rounded-full border-2 transition-all duration-200 ${styleTechniques.includes(tech) ? 'bg-pink-600 border-pink-400' : 'bg-gray-700/50 border-gray-600 hover:border-pink-500'}`}>
+                                    <button key={tech} onClick={() => toggleMultiSelectItem(tech, styleTechniques, 3)} className={`px-3 py-1 text-sm rounded-full border-2 transition-all duration-200 ${styleTechniques.includes(tech) ? 'bg-pink-600 border-pink-400' : 'bg-gray-700/50 border-gray-600 hover:border-pink-500'}`}>
                                         {tech}
                                     </button>
                                 ))}
